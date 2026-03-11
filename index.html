@@ -46,7 +46,8 @@
     pointer-events: none;
     z-index: 99999;
     transform: translate(-50%, -50%);
-    transition: transform 0.1s, width 0.2s, height 0.2s, opacity 0.2s;
+    transition: width 0.2s, height 0.2s, opacity 0.3s;
+    opacity: 0;
   }
   .cursor-ring {
     position: fixed;
@@ -56,9 +57,9 @@
     pointer-events: none;
     z-index: 99998;
     transform: translate(-50%, -50%);
-    transition: transform 0.15s ease, width 0.3s, height 0.3s, border-color 0.3s;
+    transition: width 0.3s, height 0.3s, border-color 0.3s, opacity 0.3s;
+    opacity: 0;
   }
-  body:hover .cursor { opacity: 1; }
 
   /* ── GRAIN OVERLAY ── */
   body::before {
@@ -1158,7 +1159,7 @@
       <div class="contact-details">
         <div class="contact-item">
           <div class="contact-item-label">Email</div>
-          <div class="contact-item-value"><a href="mailto:lumiere.automation4work@gmail.com">lumiere.automation4work@gmail.com</a></div>
+          <div class="contact-item-value"><a href="/cdn-cgi/l/email-protection#cfa3baa2a6aabdaae1aebabba0a2aebba6a0a1fbb8a0bda48fa8a2aea6a3e1aca0a2"><span class="__cf_email__" data-cfemail="b7dbc2daded2c5d299d6c2c3d8dad6c3ded8d983c0d8c5dcf7d0dad6dedb99d4d8da">[email&#160;protected]</span></a></div>
         </div>
         <div class="contact-item">
           <div class="contact-item-label">Téléphone</div>
@@ -1264,15 +1265,45 @@
   </button>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ── CURSOR
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursorRing');
-let mx = 0, my = 0, rx = 0, ry = 0;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx+'px'; cursor.style.top = my+'px'; });
-function animRing() { rx += (mx-rx)*0.12; ry += (my-ry)*0.12; ring.style.left = rx+'px'; ring.style.top = ry+'px'; requestAnimationFrame(animRing); }
+let mx = -100, my = -100, rx = -100, ry = -100;
+let cursorVisible = false;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx+'px'; cursor.style.top = my+'px';
+  if (!cursorVisible) {
+    cursorVisible = true;
+    cursor.style.opacity = '1';
+    ring.style.opacity = '1';
+  }
+});
+
+document.addEventListener('mouseleave', () => {
+  cursor.style.opacity = '0';
+  ring.style.opacity = '0';
+});
+
+document.addEventListener('mouseenter', () => {
+  if (cursorVisible) {
+    cursor.style.opacity = '1';
+    ring.style.opacity = '1';
+  }
+});
+
+function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx+'px';
+  ring.style.top = ry+'px';
+  requestAnimationFrame(animRing);
+}
 animRing();
-document.querySelectorAll('a,button,.qr,.btn-primary,.btn-secondary,.nav-cta').forEach(el => {
+
+document.querySelectorAll('a, button, .qr, .btn-primary, .btn-secondary, .nav-cta').forEach(el => {
   el.addEventListener('mouseenter', () => { ring.style.width='48px'; ring.style.height='48px'; ring.style.borderColor='rgba(201,168,76,0.7)'; });
   el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px'; ring.style.borderColor='rgba(201,168,76,0.4)'; });
 });
@@ -1394,6 +1425,15 @@ async function sendMessage(override) {
       body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, system:SYSTEM, messages:history })
     });
     const data = await res.json();
-    hideTyping(); isTyping=false;
+    hideTyping(); isTyping = false;
     const reply = data.content?.[0]?.text || "Une erreur s'est produite — contactez directement Mateo à lumiere.automation4work@gmail.com !";
-    history.pus
+    history.push({role:'assistant', content:reply});
+    addBot(reply);
+  } catch(err) {
+    hideTyping(); isTyping = false;
+    addBot("Je rencontre un problème de connexion. Contactez Mateo directement à lumiere.automation4work@gmail.com 🙏");
+  }
+}
+</script>
+</body>
+</html>
