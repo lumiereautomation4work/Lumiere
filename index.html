@@ -1158,7 +1158,7 @@
       <div class="contact-details">
         <div class="contact-item">
           <div class="contact-item-label">Email</div>
-          <div class="contact-item-value"><a href="mailto:klammersmateo0606@gmail.com">klammersmateo0606@gmail.com</a></div>
+          <div class="contact-item-value"><a href="mailto:lumiere.automation4work@gmail.com">lumiere.automation4work@gmail.com</a></div>
         </div>
         <div class="contact-item">
           <div class="contact-item-label">Téléphone</div>
@@ -1264,7 +1264,7 @@
   </button>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── CURSOR
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursorRing');
@@ -1331,7 +1331,7 @@ Tarifs :
 - Pro : 290€/mois, sans engagement (tout l'Essentiel + mises à jour illimitées + support prioritaire + rapport mensuel)
 - Sur Mesure : devis personnalisé pour multi-langues, intégration CRM, multi-établissements
 
-Contact : klammersmateo0606@gmail.com · 06 88 86 37 99
+Contact : lumiere.automation4work@gmail.com · 06 88 86 37 99
 Basé à Lille, Hauts-de-France
 
 Ton rôle : répondre chaleureusement et de façon concise en français. Maximum 2-3 phrases. Si la personne semble intéressée, invite-la à remplir le formulaire de contact ou à contacter Mateo directement.`;
@@ -1384,23 +1384,16 @@ async function sendMessage(override) {
   history.push({role:'user', content:text});
   isTyping = true; showTyping();
   try {
-    const res = await fetch('https://wandering-hill-adc8.lumiere-automation4work.workers.dev', {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
       headers:{
         'Content-Type':'application/json',
+        'x-api-key':'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',
+        'anthropic-version':'2023-06-01'
       },
-      body: JSON.stringify({ max_tokens:1000, system:SYSTEM, messages:history })
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, system:SYSTEM, messages:history })
     });
     const data = await res.json();
     hideTyping(); isTyping=false;
-    const reply = data.content?.[0]?.text || "Une erreur s'est produite — contactez directement Mateo à klammersmateo0606@gmail.com !";
-    history.push({role:'assistant', content:reply});
-    addBot(reply);
-  } catch(err) {
-    hideTyping(); isTyping=false;
-    addBot("Je rencontre un problème de connexion. Contactez Mateo directement à klammersmateo0606@gmail.com 🙏");
-  }
-}
-</script>
-</body>
-</html>
+    const reply = data.content?.[0]?.text || "Une erreur s'est produite — contactez directement Mateo à lumiere.automation4work@gmail.com !";
+    history.pus
